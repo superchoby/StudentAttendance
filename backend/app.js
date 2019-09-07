@@ -1,32 +1,65 @@
+'use strict'
+
 const http = require('http');
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+const mongodb = 'mongodb+srv://superchoby:1superchoby@cluster0-6hnd0.mongodb.net/test?retryWrites=true&w=majority';
 
-const url = 'mongodb+srv://superchoby:1superchoby@cluster0-6hnd0.mongodb.net/test?retryWrites=true&w=majority';
-
-mongoOptions = {
+const mongoOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }
-MongoClient.connect(url, mongoOptions, function(err, db){
-    if (err) throw err;
-    const dbo = db.db('mydb');
-    const myobj = {
-        name: "Company Inc",
-        address: "Highway 37",
-    }
-    dbo.collection("customers").insertOne(myobj, function(err, res){
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close()
-    })
-    
+
+mongoose.connect(mongodb, mongoOptions)
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+const Schema = mongoose.Schema;
+
+const ClassroomSchema = new Schema({
+    Students: [String],
+    Instructor: { type:String, required: true},
+    ClassCode: String,
 })
 
+const InstructorSchema = new Schema({
+    Classes: [String],
+})
+
+const StudentSchema = new Schema({
+    StudentId: Number,
+    FullName: String,
+    DaysPresent: [{type: Date}],
+    DaysLate: [{type: Date}],
+    DaysUnexcusedAbsences: [{type: Date}],
+    DaysExcusedAbsences: [{type: Date}],
+    ClassesList: [String],
+    AttendanceCode: String,
+    ClassCurrentlyHoldingAttendance: String,
+})
+
+const Classroom = mongoose.model('Classroom', ClassroomSchema);
+const Instructor = mongoose.model('Instructor', InstructorSchema);
+const Student = mongoose.model('Student', StudentSchema);   
 
 const server = http.createServer(function(request, response){
+    console.log('yo')
     if(request.method === 'GET'){
         if(request.url === '/createuser'){
             console.log(Object.keys(response))
+        }
+    }
+
+    if(request.method === 'POST'){
+        // if(request.url === '/createteacher'){
+        console.log(response)
+        if(request.url.includes('/createteacher')){
+            console.log(2)
+            let body = ''
+            request.on('data', function(data) {
+                console.log(3)
+                body += data
+                console.log('Partial body: ' + body)
+            })
+            // console.log(request)
         }
     }
 })
