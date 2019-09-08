@@ -1,69 +1,42 @@
-'use strict'
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-const http = require('http');
-const mongoose = require('mongoose');
-const mongodb = 'mongodb+srv://superchoby:1superchoby@cluster0-6hnd0.mongodb.net/test?retryWrites=true&w=majority';
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 
-const mongoOptions = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}
+var app = express();
 
-mongoose.connect(mongodb, mongoOptions)
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-const Schema = mongoose.Schema;
 
-const ClassroomSchema = new Schema({
-    Students: [String],
-    Instructor: { type:String, required: true},
-    ClassCode: String,
-})
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
 
-const InstructorSchema = new Schema({
-    Classes: [String],
-})
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
-const StudentSchema = new Schema({
-    StudentId: Number,
-    FullName: String,
-    DaysPresent: [{type: Date}],
-    DaysLate: [{type: Date}],
-    DaysUnexcusedAbsences: [{type: Date}],
-    DaysExcusedAbsences: [{type: Date}],
-    ClassesList: [String],
-    AttendanceCode: String,
-    ClassCurrentlyHoldingAttendance: String,
-})
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
 
-const Classroom = mongoose.model('Classroom', ClassroomSchema);
-const Instructor = mongoose.model('Instructor', InstructorSchema);
-const Student = mongoose.model('Student', StudentSchema);   
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-const server = http.createServer(function(request, response){
-    console.log('yo')
-    if(request.method === 'GET'){
-        if(request.url === '/createuser'){
-            console.log(Object.keys(response))
-        }
-    }
+  // render the error page
+  res.status(err.status || 500);
+  // res.render('error');
+  res.send('ok')
+});
 
-    if(request.method === 'POST'){
-        // if(request.url === '/createteacher'){
-        console.log(response)
-        if(request.url.includes('/createteacher')){
-            console.log(2)
-            let body = ''
-            request.on('data', function(data) {
-                console.log(3)
-                body += data
-                console.log('Partial body: ' + body)
-            })
-            // console.log(request)
-        }
-    }
-})
-
+module.exports = app;
 const port = 8080
 const host = '127.0.0.1'
-server.listen(port, host);
+app.listen(port, host)
