@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import MainPage from '../src/components/Student/MainPage';
+import ClassDashboard from '../src/components/Teacher/ClassDashboard';
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
     //     </a>
     //   </header>
     // </div>
-    <MainPage />
+    <ClassDashboard />
   );
 }
 

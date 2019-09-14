@@ -97,16 +97,6 @@ router.get('/getstudentinfo/:id', cors(corsOptions), function(req, res){
     let ClassArray = [];
     let classPromises = [];
     for (let classId of student_instance.Classes){
-      // Classroom.findById(classId)
-      // .then(classroom_instance=>{
-      //   ClassArray.push({
-      //     id: classroom_instance.id,
-      //     ClassCode: classroom_instance.ClassCode,
-      //   })
-      // })
-      // .catch(err =>{
-      //   console.log('There was an error')
-      // })
       classPromises.push(new Promise(function(resolve, reject){
         return Classroom.findById(classId)
         .then(classroom_instance=>{
