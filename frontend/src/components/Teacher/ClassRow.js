@@ -1,41 +1,128 @@
 import React from 'react';
 import './styles/ClassRow.css';
 import AttendanceStartTD from './AttendanceStartTD';
+import PropTypes from 'prop-types';
 
+/**
+ * Represents the information of the classes in
+ * table row format
+ */
 class ClassRow extends React.Component{
     constructor(props) {
         super(props)
-    
         this.state = {
             attendanceGoingOn: false,
         }
-        this.handleClick = this.handleClick.bind(this);        
+        this.handleStart = this.handleStart.bind(this);
+        this.timesUp = this.timesUp.bind(this);   
+        this.handleRepeat = this.handleRepeat.bind(this);     
+        this.handleStop = this.handleStop.bind(this);
     }
 
-    handleClick = () =>{
-        console.log('hows life')
-        this.props.startAttendance()
+    /**
+     * Activates when the user wants to stop the attendance
+     * after time is up
+     */
+    handleStop = () =>{
+        this.props.resetRows();
+        this.setState({
+            attendanceGoingOn: false,
+        })
+    }
+
+    /**
+     * Activates when the user wants to repeat the attendance
+     * after time is up
+     */
+    handleRepeat = () =>{
+        this.props.startAttendance(this.props.name, false)
+        this.setState({
+            attendanceGoingOn: true,
+        })
+    }
+
+    /**
+     * Function that handles when the attendance session
+     * has expired, meant to be passed down as props to
+     * AttendanceStartTD component
+     */
+    timesUp = name =>{
+        this.props.timesUp(name)
+        this.setState({attendanceGoingOn: false})
+    }
+
+    /**
+     * Handles when the instructor wants to start the
+     * attendance session
+     */
+    handleStart = () =>{
+        this.props.startAttendance(this.props.name)
         this.setState({
             attendanceGoingOn: true,
         })
     }
 
     render(){
-        let attendanceTD =  this.state.attendanceGoingOn ? 
-        <AttendanceStartTD code={this.props.code} goalTime={this.props.goalTime} /> 
-        :
-        <td className='start-attendence-td' onClick={this.handleClick}>Start Attendence</td>
+        let attendanceTD = null;
+        if(this.state.attendanceGoingOn){
+            attendanceTD = <AttendanceStartTD name={this.props.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
+        }else if(this.props.attendanceEnded){
+            attendanceTD = 
+            <React.Fragment>
+                <td></td>
+                <td className='continue-end-attendence-td' onClick={this.handleRepeat}>Repeat</td>
+                <td className='continue-end-attendence-td' onClick={this.handleStop}>Stop</td>
+            </React.Fragment>
+        }else if(this.props.otherRowStartAttendance){
+            attendanceTD = <React.Fragment><td></td><td></td><td></td></React.Fragment>
+        }else{
+            attendanceTD = <td className='start-attendence-td' onClick={this.handleStart}>Start Attendence</td>
+        }
 
         return(
             <React.Fragment>
                 <tr className='anime-info-row'>
                     <td className='blank-td'></td>
-                    <td id='class-name-td'>osu</td>
+                    <td className='class-name-td'>{this.props.name}</td>
                     {attendanceTD}
                 </tr>
             </React.Fragment>
         )
     }
+}
+
+ClassRow.propTypes = {
+    /** Returns all ClassRow components to default */
+    resetRows: PropTypes.func,
+    /** 
+     * Starts attendance for the class
+     * 
+     * @param {string} name The name used to identify 
+     * the class
+     */
+    startAttendance: PropTypes.func,
+    /** Name of the class */
+    name: PropTypes.string,
+    /** Handles when attendance time is up,
+     *  meant to be passed down as props to AttendanceStartTD
+    */
+    timesUp: PropTypes.func,
+    /** Attendance code, meant to be passed
+     * down as props to AttendanceStartTD 
+     */
+    code: PropTypes.string,
+    /** Attendance time limit, meant to be passed
+     * down as props to AttendanceStartTD 
+     */
+    goalTime: PropTypes.number,
+    /** boolean showing whether or not attendance has ended */
+    attendanceEnded: PropTypes.bool,
+    /** 
+     * boolean to say if that instance of  
+     * the ClassRow is not having an attendance session
+     * but another ClassRow is
+    */
+    otherRowStartAttendance: PropTypes.bool,
 }
 
 export default ClassRow;

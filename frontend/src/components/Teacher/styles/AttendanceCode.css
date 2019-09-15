@@ -20,12 +20,8 @@
     -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
     animation-name: DisplayAttendanceCode;
     animation-duration: 1s;
-    /* background-color: white; */
     background-color:rgb(255,255,255);
     border-radius: 10px;
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
     text-align: center;
 }
 
