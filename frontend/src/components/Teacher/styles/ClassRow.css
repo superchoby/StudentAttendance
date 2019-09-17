@@ -23,3 +23,7 @@
 .start-attendence-td:active{
     color: black;
 }
+
+.continue-end-attendence-td{
+    cursor: pointer;
+}

@@ -85,6 +85,42 @@ router.post('/createclassroom', function(req, res, next) {
   })
 });
 
+router.get('/getinstructor/:id', cors(corsOptions), function(req, res){
+  Instructor.findById(req.params.id, 'Classes', function(err, instructor_instance){
+    if (err) return handleError(err);
+    let ClassArray = [];
+    let classPromises = [];
+    for (let classId of instructor_instance.Classes){
+      classPromises.push(new Promise(function(resolve, reject){
+        return Classroom.findById(classId)
+        .then(classroom_instance=>{
+          ClassArray.push({
+            id: classroom_instance.id,
+            name: classroom_instance.Name,
+            students: classroom_instance.Students
+          })
+          //PRINTS AFTER RESPONSE IS SENT
+          resolve("Completed")
+        })
+        .catch(err =>{
+          console.log('There was an error')
+        })
+      }))
+    }
+    Promise.all(classPromises)
+    .then(function(value){
+      console.log(ClassArray)
+      res.send({
+        instructor_info: instructor_instance,
+        class_info: ClassArray
+      })
+    })
+    .catch(err =>{
+      console.log('There was an error')
+    })
+  })
+})
+
 router.post('/startattendance', function(req, res) {
   Classroom.findByIdAndUpdate(req.body.class_id, { ClassCode: req.body.code})
   res.statusText = "The action was completed";

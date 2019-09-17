@@ -6,7 +6,11 @@
     padding-top: 20px;
 }
 
-#banner-div p{
-    margin-left: 10%;
-    margin-top: 0;
+#classes-header{
+    /* margin-left: 10%;
+    margin-top: 0; */
+    margin: 0;
+    display: inline-block;
+    margin-left: 8%;
+    width: 160px;
 }
