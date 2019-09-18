@@ -13,7 +13,7 @@ class Banner extends React.Component{
         return(
             <div id='banner-div'>
                 <div id='classes-header'>Classes</div>
-                <DefaultTime />
+                <DefaultTime changeTime={this.props.changeTime}  goalTime={this.props.goalTime}/>
             </div>
         )
     }

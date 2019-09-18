@@ -60,8 +60,8 @@ router.post('/createstudent', function(req, res, next) {
   },
     function(err, student_instance){
       if (err) return handleError(err);
-      console.log(student_instance)
-      return student_instance
+      res.statusText = 'The student was created';
+      return res.status(200).send('Student created')
   })
   res.send('respond with a resource');
 });

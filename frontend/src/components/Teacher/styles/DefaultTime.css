@@ -23,3 +23,10 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+.time-change-inputs{
+    width: 20px;
+    display: inline-block;
+    height: 20px;
+    font-size: 17px;
+}

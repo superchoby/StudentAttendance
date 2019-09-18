@@ -15,7 +15,7 @@ class ClassDashboard extends React.Component{
         this.state = {
              NeedToShowAttendanceCode: false,
              currentAttendanceCode: '',
-             goalTime: 2,
+             goalTime: 500,
         }
         this.startAttendance = this.startAttendance.bind(this);
         this.stopShowAttendanceCode = this.stopShowAttendanceCode.bind(this);
@@ -23,6 +23,13 @@ class ClassDashboard extends React.Component{
         this.attendanceTimeUp = this.attendanceTimeUp.bind(this);
         this.generateDefaultClassRows = this.generateDefaultClassRows.bind(this);
         this.resetRows = this.resetRows.bind(this);
+        this.changeTime = this.changeTime.bind(this);
+    }
+
+    changeTime = newTime =>{
+        this.setState({
+            goalTime: newTime
+        })
     }
 
     /**
@@ -152,7 +159,7 @@ class ClassDashboard extends React.Component{
         return(
             <React.Fragment>
                 <div>
-                    <Banner /> 
+                    <Banner changeTime={this.changeTime} goalTime={this.state.goalTime} /> 
                     <table>
                         <tbody>
                             {this.state.classRowList}
