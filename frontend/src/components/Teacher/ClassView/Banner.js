@@ -1,6 +1,6 @@
 import React from 'react';
 import './styles/Banner.css';
-import DefaultTime from './DefaultTime';
+import DaysHeld from './DaysHeld';
 
 /**
  * The top area of the dashboard that 
@@ -12,8 +12,8 @@ class Banner extends React.Component{
     render(){
         return(
             <div id='banner-div'>
-                <div id='classes-header'>Classes</div>
-                <DefaultTime changeTime={this.props.changeTime}  goalTime={this.props.goalTime}/>
+                <div id='classname-header' className='dashboard-header'>{this.props.name}</div>
+                <DaysHeld />
             </div>
         )
     }

@@ -59,17 +59,20 @@ router.post('/createstudent', function(req, res, next) {
     FullName: req.body.first_name + ' ' + req.body.last_name,
   },
     function(err, student_instance){
-      if (err) return handleError(err);
-      res.statusText = 'The student was created';
-      return res.status(200).send('Student created')
+      if (err){
+        next(err)
+      }else {
+        return res.status(200)
+      }
+      // res.statusText = 'The student was created';
   })
-  res.send('respond with a resource');
+  // res.send('Student Created');
 });
 
 router.post('/createclassroom', function(req, res, next) {
   let InstructorInstance;
   Instructor.findOne({ Email: req.body.email}, function(err, response){
-    if (err) return handleError(err)
+    if (err) next (err)
     InstructorInstance = response;
     Classroom.create({ 
       Name: req.body.name, 
@@ -109,7 +112,6 @@ router.get('/getinstructor/:id', cors(corsOptions), function(req, res){
     }
     Promise.all(classPromises)
     .then(function(value){
-      console.log(ClassArray)
       res.send({
         instructor_info: instructor_instance,
         class_info: ClassArray
@@ -151,29 +153,78 @@ router.get('/getstudentinfo/:id', cors(corsOptions), function(req, res){
     }
     Promise.all(classPromises)
     .then(function(value){
-      console.log(ClassArray)
       res.send({
         student_info: student_instance,
         class_info: ClassArray
       })
     })
     .catch(err =>{
-      console.log('There was an error')
+      console.log(err)
     })
+  })
+})
+
+router.get('/getclassinfo/:id', cors(corsOptions), function(req, res){
+  Classroom.findById(req.params.id, "Name Students", function(err, classroom_instance){
+    if (err) return handleError(err);
+    let StudentArray = [];
+    let studentPromises = [];
+    for (let studentId of classroom_instance.Students){
+      studentPromises.push(new Promise(function(resolve, reject){
+        return Student.findById(studentId)
+        .then(student_instance=>{
+          StudentArray.push({
+            FullName: student_instance.FullName,
+            DaysPresent: student_instance.DaysPresent,
+            DaysLate: student_instance.DaysLate,
+            DaysUnexcusedAbsences: student_instance.DaysUnexcusedAbsences,
+            DaysExcusedAbsences: student_instance.DaysExcusedAbsences,
+          })
+          //PRINTS AFTER RESPONSE IS SENT
+          resolve("Completed")
+        })
+        .catch(err =>{
+          console.log('There was an error')
+        })
+      }))
+    }
+    Promise.all(studentPromises)
+    .then(function(value){
+      res.send({
+        student_info: StudentArray,
+        class_info: classroom_instance
+      });
+    })
+    .catch(err =>{
+      console.log(err)
+    })
+    
   })
 })
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  Student.findOne(function(err, response){
+  const ClassroomSchema = new Schema({
+    Name: String,
+    Students: [String],
+    Instructor: { type: String, required: true },
+    ClassCode: String,
+  })
+
+  Student.find(function(err, response){
     console.log(response)
   })
-  Classroom.findOne(function(err, response){
+  Classroom.updateMany(null, { $push: { Students: '5d844614aed71d7b6bdd62cc'} },
+    function(err, response){
+    console.log(response)
+  })
+  Classroom.find(function(err, response){
     console.log(response)
   })
   Instructor.findOne(function(err, response){
     console.log(response)
   })
+
   // Student.remove(function(err, response){
   //   console.log(response)
   // })

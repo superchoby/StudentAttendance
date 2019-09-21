@@ -1,4 +1,4 @@
-.anime-info-row{
+.info-row{
     background: #F4F4F4;
     font-size: 18px;
     font-family: 'Segoe UI';
@@ -13,11 +13,13 @@
     width: 60%;
 }
 
-.start-attendence-td{
+/* these are rows for when 
+no attendance is going on */
+.no-attendance-td{
     color: blue;
     text-decoration: underline;
     cursor: pointer;
-    width: 20%;
+    width: 15%;
 }
 
 .start-attendence-td:active{

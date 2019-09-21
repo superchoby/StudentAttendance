@@ -1,27 +1,15 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import ClassDashboard from '../src/components/Teacher/ClassDashboard';
+import ClassDashboard from './components/Teacher/TeacherDashboard/TeacherDashboard';
+import ClassView from './components/Teacher/ClassView/ClassView';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
-    <ClassDashboard />
+    <BrowserRouter>
+        <Route exact path='/' component={ClassDashboard} />
+        <Route path='/viewclassinfo/:class_id' component={ClassView} />
+    </BrowserRouter>
   );
 }
 

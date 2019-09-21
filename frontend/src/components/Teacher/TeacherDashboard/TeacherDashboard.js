@@ -4,7 +4,7 @@ import ClassRow from './ClassRow';
 import './styles/ClassDashboard.css';
 import AttendanceCode from './AttendanceCode';
 import axios from 'axios';
-
+import { Link } from 'react-router-dom';
 /**
  * The parent component that contains the entire page
  * for the teacher's dashboard
@@ -43,7 +43,7 @@ class ClassDashboard extends React.Component{
      */
     generateDefaultClassRows = class_array =>{
         return class_array.map(class_info =>{
-            return <ClassRow key={class_info.name} name={class_info.name} startAttendance={this.startAttendance} />
+            return <ClassRow key={class_info.name} data={class_info} startAttendance={this.startAttendance} />
         })
     }
 
@@ -74,7 +74,7 @@ class ClassDashboard extends React.Component{
                     key={classArray[i].props.name} 
                     attendanceEnded={true} 
                     resetRows={this.resetRows} 
-                    name={classArray[i].props.name} 
+                    data={classArray[i].props.data}
                     code={this.code} 
                     goalTime={this.state.goalTime} 
                     startAttendance={this.startAttendance} 
@@ -112,10 +112,10 @@ class ClassDashboard extends React.Component{
         }
         let classArray = this.state.classRowList.slice()
         for (let i=0; i<classArray.length; i++){
-            if (classArray[i].props.name === name){
-                classArray[i] = <ClassRow key={classArray[i].props.name} name={classArray[i].props.name} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
+            if (classArray[i].props.data.name === name){
+                classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
             }else{
-                classArray[i] = <ClassRow key={classArray[i].props.name} name={classArray[i].props.name} otherRowStartAttendance={true} />
+                classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} otherRowStartAttendance={true} />
             }
         }
         this.setState({
@@ -150,7 +150,7 @@ class ClassDashboard extends React.Component{
             })
         })
         .catch(err =>{
-            console.log('There was an error')
+            console.log(err)
         })
     }
 
