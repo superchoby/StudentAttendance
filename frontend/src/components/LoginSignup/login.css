@@ -1,0 +1,142 @@
+.Login {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height : 100vh;
+    background-color: #AAAAAA;
+
+
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Corben', Georgia, Times, serif;
+}
+
+.loginForm  {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height : 500px;
+  width : 600px;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #ffffff;
+
+}
+
+input:focus::placeholder{
+       color:transparent;
+  }
+
+  input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+input[type= "logemail"] {
+  position: relative;
+  height: 30px;
+  width:190px;
+  box-sizing: border-box;
+}
+
+input[type= "logpassword"] {
+
+  height: 30px;
+  width: 190px;
+  box-sizing: border-box;
+}
+
+.emailTitle {
+  position: relative;
+  margin-bottom: 7px;
+
+}
+.passwordTitle {
+  position: relative;
+  margin-bottom: 7px;
+
+}
+.loginBoxes {
+  position:relative;
+  top: 25px;
+}
+button[type = "submit"] {
+  position: relative;
+  width: 280px;
+  background-color: #8226d0;
+  color: white;
+
+  padding: 14px 20px;
+  margin: 50px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  bottom: 50px;
+}
+
+
+#header{
+  list-style-type: none;
+  padding: 0;
+position:relative;
+  overflow: hidden;
+  background-color: #000000;
+  text-decoration: none;
+  border-radius: 10px;
+  top: 10px;
+}
+
+#Students a, #Teachers a{
+  float: left;
+  cursor: pointer;
+}
+li {
+  display: inline;
+
+}
+#Students a {
+  border-right: 1px solid black;
+
+}
+
+
+
+#Students a, #Teachers a{
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+
+}
+
+#Students a:focus, #Teachers a:focus{
+  border-bottom: 4px solid #8226d0;
+}
+
+.needAccount {
+  position: relative;
+
+  top: 120px;
+
+}
+.forgotPass {
+  color:gray;
+  position: relative;
+  top: 130px;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor:pointer;
+
+}
+
+/* Change the link color to #111 (black) on hover */
+#Students a:hover, #Teachers a:hover {
+  background-color: #111;
+}
