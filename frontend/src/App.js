@@ -1,10 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import ClassDashboard from './components/Teacher/TeacherDashboard/TeacherDashboard';
+import ClassView from './components/Teacher/ClassView/ClassView';
+import { BrowserRouter, Route } from 'react-router-dom';
+
 
 function App() {
-
+  return (
+    <BrowserRouter>
+        <Route exact path='/' component={ClassDashboard} />
+        <Route path='/viewclassinfo/:class_id' component={ClassView} />
+    </BrowserRouter>
+  );
 }
 
 

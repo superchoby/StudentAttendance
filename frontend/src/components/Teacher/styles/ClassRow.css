@@ -1,0 +1,25 @@
+.anime-info-row{
+    background: #F4F4F4;
+    font-size: 18px;
+    font-family: 'Segoe UI';
+    height: 55px;
+}
+
+.blank-td{
+    width: 5%;
+}
+
+.class-name-td{
+    width: 60%;
+}
+
+.start-attendence-td{
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    width: 20%;
+}
+
+.start-attendence-td:active{
+    color: black;
+}
