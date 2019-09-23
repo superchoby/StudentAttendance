@@ -3,11 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const db = require('../db');
 const Schema = db.Schema;
-const cors = require('cors');
+// const cors = require('cors');
 
-const corsOptions = {
-  origin: 'http://localhost:3000'
-}
+// const corsOptions = {
+//   origin: 'http://localhost:3000'
+// }
 
 const ClassroomSchema = new Schema({
   Name: String,
@@ -69,26 +69,32 @@ router.post('/createstudent', function(req, res, next) {
   // res.send('Student Created');
 });
 
-router.post('/createclassroom', function(req, res, next) {
+router.post('/createclassroom', /*cors(corsOptions),*/ function(req, res, next) {
+  console.log(req.body)
   let InstructorInstance;
   Instructor.findOne({ Email: req.body.email}, function(err, response){
     if (err) next (err)
     InstructorInstance = response;
+    console.log(response)
     Classroom.create({ 
       Name: req.body.name, 
       Instructor: InstructorInstance.id,
     }, function(err, classroom_instance){
-        if (err) return handleError(err);
-        Instructor.findByIdAndUpdate(InstructorInstance.id, { $push: {Classes: classroom_instance.id}}, function(err, instructor_instance){
-          if (err) handleError(err);
-        })
-        res.statusText = 'The classroom was created';
-        return res.status(200).send('Classroom created')
+        // if (err) return handleError(err);
+        if (err){
+          next(err)
+        }else {
+          Instructor.findByIdAndUpdate(InstructorInstance.id, { $push: {Classes: classroom_instance.id}}, function(err, instructor_instance){
+            if (err) next(err);
+          })
+          res.status(200)
+          res.send({id: classroom_instance.id})
+        }
     })
   })
 });
 
-router.get('/getinstructor/:id', cors(corsOptions), function(req, res){
+router.get('/getinstructor/:id', /*cors(corsOptions),*/ function(req, res){
   Instructor.findById(req.params.id, 'Classes', function(err, instructor_instance){
     if (err) return handleError(err);
     let ClassArray = [];
@@ -129,7 +135,7 @@ router.post('/startattendance', function(req, res) {
   return res.status(200).send('attendance has started')
 })
 
-router.get('/getstudentinfo/:id', cors(corsOptions), function(req, res){
+router.get('/getstudentinfo/:id', /*cors(corsOptions),*/ function(req, res){
   Student.findById(req.params.id, 'Classes', function(err, student_instance){
     if (err) return handleError(err);
     let ClassArray = [];
@@ -164,7 +170,7 @@ router.get('/getstudentinfo/:id', cors(corsOptions), function(req, res){
   })
 })
 
-router.get('/getclassinfo/:id', cors(corsOptions), function(req, res){
+router.get('/getclassinfo/:id', /*cors(corsOptions),*/ function(req, res){
   Classroom.findById(req.params.id, "Name Students", function(err, classroom_instance){
     if (err) return handleError(err);
     let StudentArray = [];
@@ -204,18 +210,7 @@ router.get('/getclassinfo/:id', cors(corsOptions), function(req, res){
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  const ClassroomSchema = new Schema({
-    Name: String,
-    Students: [String],
-    Instructor: { type: String, required: true },
-    ClassCode: String,
-  })
-
   Student.find(function(err, response){
-    console.log(response)
-  })
-  Classroom.updateMany(null, { $push: { Students: '5d844614aed71d7b6bdd62cc'} },
-    function(err, response){
     console.log(response)
   })
   Classroom.find(function(err, response){

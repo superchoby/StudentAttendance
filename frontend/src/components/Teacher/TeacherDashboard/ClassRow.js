@@ -81,7 +81,8 @@ class ClassRow extends React.Component{
             attendanceTD = 
             <React.Fragment>
                 <td className='no-attendance-td' onClick={this.handleStart}>Start Attendence</td>
-                <td className='no-attendance-td'><Link to={url}>View Students</Link></td>
+                <td className='no-attendance-td'><Link to={url} className="link">View Students</Link></td>
+                <td className='no-attendance-td'>Edit</td>
             </React.Fragment>
         }
 

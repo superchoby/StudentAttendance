@@ -29,3 +29,7 @@ no attendance is going on */
 .continue-end-attendence-td{
     cursor: pointer;
 }
+
+.link{
+    color: blue;
+}

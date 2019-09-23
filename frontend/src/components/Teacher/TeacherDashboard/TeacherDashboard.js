@@ -5,6 +5,9 @@ import './styles/ClassDashboard.css';
 import AttendanceCode from './AttendanceCode';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import './styles/TeacherDashboard.css';
+import AddClass from './AddClass';
+
 /**
  * The parent component that contains the entire page
  * for the teacher's dashboard
@@ -24,6 +27,16 @@ class ClassDashboard extends React.Component{
         this.generateDefaultClassRows = this.generateDefaultClassRows.bind(this);
         this.resetRows = this.resetRows.bind(this);
         this.changeTime = this.changeTime.bind(this);
+        this.createNewClass = this.createNewClass.bind(this);
+    }
+
+    createNewClass = classData =>{
+        let currentClassRows = this.state.classRowList
+        console.log('wutup')
+        let newRow = <ClassRow key={classData.name} data={classData} startAttendance={this.startAttendance} />
+        this.setState({
+            classRowList: [...currentClassRows, newRow]
+        })
     }
 
     changeTime = newTime =>{
@@ -165,6 +178,7 @@ class ClassDashboard extends React.Component{
                             {this.state.classRowList}
                         </tbody>
                     </table>
+                    <AddClass addClass={this.createNewClass} />
                 </div>
                 {AttendanceCodeBox}
             </React.Fragment>

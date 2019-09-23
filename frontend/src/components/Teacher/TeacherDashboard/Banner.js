@@ -14,6 +14,7 @@ class Banner extends React.Component{
             <div id='banner-div'>
                 <div className='dashboard-header'>Classes</div>
                 <DefaultTime changeTime={this.props.changeTime}  goalTime={this.props.goalTime}/>
+                {/* <AddClass /> */}
             </div>
         )
     }
