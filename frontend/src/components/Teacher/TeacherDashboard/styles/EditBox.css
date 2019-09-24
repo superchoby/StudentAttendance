@@ -1,0 +1,6 @@
+#class-name-edit{
+    border: none;
+    border-bottom: 3px solid black;
+    font-size: 22px;
+    transition: border-bottom-color .2s;
+}

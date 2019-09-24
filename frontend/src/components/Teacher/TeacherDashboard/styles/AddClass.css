@@ -30,21 +30,21 @@
 #add-class-div{
     height: 50%;
     width: 50%;
-    -webkit-animation-name: DisplayAttendanceCode; /* Safari 4.0 - 8.0 */
+    -webkit-animation-name: DisplayAddBox; /* Safari 4.0 - 8.0 */
     -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
-    animation-name: DisplayAttendanceCode;
+    animation-name: DisplayAddBox;
     animation-duration: 1s;
     background-color:rgb(255,255,255);
     border-radius: 10px;
     text-align: center;
 }
 
-@keyframes DisplayAttendanceCode{
+@keyframes DisplayAddBox{
     from {height: 0; width: 0;}
     to {height: 50%; width: 50%;}
 }
 
-@-webkit-keyframes DisplayAttendanceCode{
+@-webkit-keyframes DisplayAddBox{
     from {height: 0; width: 0;}
     to {height: 50%; width: 50%;}
 }

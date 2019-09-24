@@ -3,6 +3,7 @@ import './styles/ClassRow.css';
 import AttendanceStartTD from './AttendanceStartTD';
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
+import EditBox from './EditBox';
 
 /**
  * Represents the information of the classes in
@@ -13,11 +14,19 @@ class ClassRow extends React.Component{
         super(props)
         this.state = {
             attendanceGoingOn: false,
+            editGoingOn: false,
         }
         this.handleStart = this.handleStart.bind(this);
         this.timesUp = this.timesUp.bind(this);   
         this.handleRepeat = this.handleRepeat.bind(this);     
         this.handleStop = this.handleStop.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+    }
+
+    handleEdit = () =>{
+        this.setState({
+            editGoingOn: true,
+        })
     }
 
     /**
@@ -65,7 +74,9 @@ class ClassRow extends React.Component{
 
     render(){
         let attendanceTD = null;
-        if(this.state.attendanceGoingOn){
+        if(this.state.editGoingOn){
+            attendanceTD = <EditBox name={this.props.data.name} /> 
+        }else if(this.state.attendanceGoingOn){
             attendanceTD = <AttendanceStartTD name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
         }else if(this.props.attendanceEnded){
             attendanceTD = 
@@ -82,7 +93,7 @@ class ClassRow extends React.Component{
             <React.Fragment>
                 <td className='no-attendance-td' onClick={this.handleStart}>Start Attendence</td>
                 <td className='no-attendance-td'><Link to={url} className="link">View Students</Link></td>
-                <td className='no-attendance-td'>Edit</td>
+                <td className='no-attendance-td' onClick={this.handleEdit} >Edit</td>
             </React.Fragment>
         }
 
