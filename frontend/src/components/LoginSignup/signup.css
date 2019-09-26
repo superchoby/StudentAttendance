@@ -1,0 +1,60 @@
+.SignUp {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height : 100vh;
+    background-color: #AAAAAA;
+
+
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Corben', Georgia, Times, serif;
+}
+.signupBoxes {
+  position: relative;
+  right: 40px;
+  bottom: 45px;
+}
+input {
+  width: 190px;
+  height: 30px;
+}
+.signupForm  {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height : 500px;
+  width : 600px;
+  font-family: "Times New Roman", Times, serif;
+  background-color: #ffffff;
+
+}
+
+.haveAccount {
+  position: relative;
+  top: 20px;
+}
+.accHeader {
+  position:relative;
+  bottom: 50px;
+}
+.passwordConfirmTitle {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+button[type = "createAccount"] {
+  position: relative;
+  width: 280px;
+  background-color: #8226d0;
+  color: white;
+
+
+  padding: 14px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+
+}
