@@ -2,6 +2,8 @@ import React from 'react';
 import './styles/ClassRow.css';
 import AttendanceStartTD from './AttendanceStartTD';
 import PropTypes from 'prop-types';
+import { Link } from "react-router-dom";
+import EditBox from './EditBox';
 
 /**
  * Represents the information of the classes in
@@ -12,11 +14,31 @@ class ClassRow extends React.Component{
         super(props)
         this.state = {
             attendanceGoingOn: false,
+            editGoingOn: false,
         }
         this.handleStart = this.handleStart.bind(this);
         this.timesUp = this.timesUp.bind(this);   
         this.handleRepeat = this.handleRepeat.bind(this);     
         this.handleStop = this.handleStop.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.update = this.update.bind(this);
+    }
+
+    update = (classNameOriginal, classNameNew) =>{
+        this.handleEdit()
+        this.props.update(classNameOriginal, classNameNew)
+    }
+
+    handleEdit = () =>{
+        if (this.state.editGoingOn){
+            this.setState({
+                editGoingOn: false,
+            })
+        }else{
+            this.setState({
+                editGoingOn: true,
+            })
+        }
     }
 
     /**
@@ -35,7 +57,7 @@ class ClassRow extends React.Component{
      * after time is up
      */
     handleRepeat = () =>{
-        this.props.startAttendance(this.props.name, false)
+        this.props.startAttendance(this.props.data.name, false)
         this.setState({
             attendanceGoingOn: true,
         })
@@ -56,7 +78,7 @@ class ClassRow extends React.Component{
      * attendance session
      */
     handleStart = () =>{
-        this.props.startAttendance(this.props.name)
+        this.props.startAttendance(this.props.data.name)
         this.setState({
             attendanceGoingOn: true,
         })
@@ -64,8 +86,10 @@ class ClassRow extends React.Component{
 
     render(){
         let attendanceTD = null;
-        if(this.state.attendanceGoingOn){
-            attendanceTD = <AttendanceStartTD name={this.props.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
+        if(this.state.editGoingOn){
+            attendanceTD = <EditBox update={this.update} delete={this.props.delete} classID={this.props.data.id} handleEditCancel={this.handleEdit} name={this.props.data.name} /> 
+        }else if(this.state.attendanceGoingOn){
+            attendanceTD = <AttendanceStartTD name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
         }else if(this.props.attendanceEnded){
             attendanceTD = 
             <React.Fragment>
@@ -76,14 +100,20 @@ class ClassRow extends React.Component{
         }else if(this.props.otherRowStartAttendance){
             attendanceTD = <React.Fragment><td></td><td></td><td></td></React.Fragment>
         }else{
-            attendanceTD = <td className='start-attendence-td' onClick={this.handleStart}>Start Attendence</td>
+            let url = '/viewclassinfo/' + this.props.data.id
+            attendanceTD = 
+            <React.Fragment>
+                <td className='no-attendance-td' onClick={this.handleStart}>Start Attendence</td>
+                <td className='no-attendance-td'><Link to={url} className="link">View Students</Link></td>
+                <td className='no-attendance-td' onClick={this.handleEdit} >Edit</td>
+            </React.Fragment>
         }
 
         return(
             <React.Fragment>
-                <tr className='anime-info-row'>
+                <tr className='info-row'>
                     <td className='blank-td'></td>
-                    <td className='class-name-td'>{this.props.name}</td>
+                    <td className='class-name-td'>{this.props.data.name}</td>
                     {attendanceTD}
                 </tr>
             </React.Fragment>
@@ -101,8 +131,8 @@ ClassRow.propTypes = {
      * the class
      */
     startAttendance: PropTypes.func,
-    /** Name of the class */
-    name: PropTypes.string,
+    /** Object with class info */
+    data: PropTypes.object,
     /** Handles when attendance time is up,
      *  meant to be passed down as props to AttendanceStartTD
     */

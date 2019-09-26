@@ -1,0 +1,32 @@
+.default-time-div{
+    width: 200px;
+    height: 80px;
+    font-size: 16px;
+    float: right;
+    background-color: white;
+    border-radius: 10px;
+    margin-right: 8%;
+    text-align: center;
+    margin-left: 0px;
+    padding: 5px;
+}
+
+.default-time-div div{
+    font-size: 28px;
+    margin-bottom: 0;
+}
+
+.default-time-div p{
+    font-size: 15px;
+    margin: 0;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.time-change-inputs{
+    width: 20px;
+    display: inline-block;
+    height: 20px;
+    font-size: 17px;
+}

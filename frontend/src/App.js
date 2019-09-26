@@ -4,7 +4,6 @@ import ClassDashboard from './components/Teacher/TeacherDashboard/TeacherDashboa
 import ClassView from './components/Teacher/ClassView/ClassView';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-
 function App() {
   return (
     <BrowserRouter>

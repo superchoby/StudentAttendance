@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 class AttendanceCode extends React.Component{
     render(){
         return(
-            <div id='gray-cover'>
+            <div className='gray-cover'>
                 <div id='attendance-code-div'>
                     <span id='close-circle' onClick={this.props.handleClose}>
                         <p>&#10005;</p>

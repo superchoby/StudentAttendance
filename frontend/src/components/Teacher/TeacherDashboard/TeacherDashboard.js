@@ -4,6 +4,9 @@ import ClassRow from './ClassRow';
 import './styles/ClassDashboard.css';
 import AttendanceCode from './AttendanceCode';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import './styles/TeacherDashboard.css';
+import AddClass from './AddClass';
 
 /**
  * The parent component that contains the entire page
@@ -15,7 +18,7 @@ class ClassDashboard extends React.Component{
         this.state = {
              NeedToShowAttendanceCode: false,
              currentAttendanceCode: '',
-             goalTime: 2,
+             goalTime: 500,
         }
         this.startAttendance = this.startAttendance.bind(this);
         this.stopShowAttendanceCode = this.stopShowAttendanceCode.bind(this);
@@ -23,6 +26,51 @@ class ClassDashboard extends React.Component{
         this.attendanceTimeUp = this.attendanceTimeUp.bind(this);
         this.generateDefaultClassRows = this.generateDefaultClassRows.bind(this);
         this.resetRows = this.resetRows.bind(this);
+        this.changeTime = this.changeTime.bind(this);
+        this.createNewClass = this.createNewClass.bind(this);
+        this.deleteClass = this.deleteClass.bind(this);
+        this.updateClassName = this.updateClassName.bind(this);
+    }
+
+    updateClassName = (classNameOriginal, classNameNew) =>{
+        for (let i=0; i<this.state.classRowList.length; i++){
+            if (this.state.classRowList[i].props.data.name === classNameOriginal){
+                let classRowCopy = [...this.state.classRowList]
+                classRowCopy[i].props.data.name = classNameNew;
+                this.setState({
+                    classRowList: classRowCopy,
+                })
+                break;
+            }
+        }
+    }
+
+    deleteClass = className =>{
+        for (let i=0; i<this.state.classRowList.length; i++){
+            if (this.state.classRowList[i].props.data.name === className){
+                let classRowCopy = [...this.state.classRowList]
+                classRowCopy.splice(i, 1)
+                this.setState({
+                    classRowList: classRowCopy,
+                })
+                break;
+            }
+        }
+    }
+
+    createNewClass = classData =>{
+        let currentClassRows = this.state.classRowList
+        console.log('wutup')
+        let newRow = <ClassRow update={this.updateClassName} delete={this.deleteClass} key={classData.name} data={classData} startAttendance={this.startAttendance} />
+        this.setState({
+            classRowList: [...currentClassRows, newRow]
+        })
+    }
+
+    changeTime = newTime =>{
+        this.setState({
+            goalTime: newTime
+        })
     }
 
     /**
@@ -36,7 +84,7 @@ class ClassDashboard extends React.Component{
      */
     generateDefaultClassRows = class_array =>{
         return class_array.map(class_info =>{
-            return <ClassRow key={class_info.name} name={class_info.name} startAttendance={this.startAttendance} />
+            return <ClassRow key={class_info.name} update={this.updateClassName} data={class_info} delete={this.deleteClass} startAttendance={this.startAttendance} />
         })
     }
 
@@ -67,9 +115,11 @@ class ClassDashboard extends React.Component{
                     key={classArray[i].props.name} 
                     attendanceEnded={true} 
                     resetRows={this.resetRows} 
-                    name={classArray[i].props.name} 
+                    data={classArray[i].props.data}
                     code={this.code} 
                     goalTime={this.state.goalTime} 
+                    update={this.updateClassName}
+                    delete={this.deleteClass}
                     startAttendance={this.startAttendance} 
                 />
             }
@@ -105,10 +155,10 @@ class ClassDashboard extends React.Component{
         }
         let classArray = this.state.classRowList.slice()
         for (let i=0; i<classArray.length; i++){
-            if (classArray[i].props.name === name){
-                classArray[i] = <ClassRow key={classArray[i].props.name} name={classArray[i].props.name} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
+            if (classArray[i].props.data.name === name){
+                classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
             }else{
-                classArray[i] = <ClassRow key={classArray[i].props.name} name={classArray[i].props.name} otherRowStartAttendance={true} />
+                classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} otherRowStartAttendance={true} />
             }
         }
         this.setState({
@@ -143,7 +193,7 @@ class ClassDashboard extends React.Component{
             })
         })
         .catch(err =>{
-            console.log('There was an error')
+            console.log(err)
         })
     }
 
@@ -152,12 +202,13 @@ class ClassDashboard extends React.Component{
         return(
             <React.Fragment>
                 <div>
-                    <Banner /> 
+                    <Banner changeTime={this.changeTime} goalTime={this.state.goalTime} /> 
                     <table>
                         <tbody>
                             {this.state.classRowList}
                         </tbody>
                     </table>
+                    <AddClass addClass={this.createNewClass} />
                 </div>
                 {AttendanceCodeBox}
             </React.Fragment>

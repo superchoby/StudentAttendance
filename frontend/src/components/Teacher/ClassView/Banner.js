@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles/Banner.css';
+import DaysHeld from './DaysHeld';
 
 /**
  * The top area of the dashboard that 
@@ -11,7 +12,8 @@ class Banner extends React.Component{
     render(){
         return(
             <div id='banner-div'>
-                <p>Classes</p>
+                <div id='classname-header' className='dashboard-header'>{this.props.name}</div>
+                <DaysHeld />
             </div>
         )
     }
