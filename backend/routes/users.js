@@ -51,6 +51,7 @@ router.post('/createinstructor', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+// student routes
 router.post('/createstudent', function(req, res, next) {
   Student.create({ 
     Email: req.body.email, 
@@ -64,78 +65,10 @@ router.post('/createstudent', function(req, res, next) {
       }else {
         return res.status(200)
       }
-      // res.statusText = 'The student was created';
-  })
-  // res.send('Student Created');
-});
-
-router.post('/createclassroom', /*cors(corsOptions),*/ function(req, res, next) {
-  console.log(req.body)
-  let InstructorInstance;
-  Instructor.findOne({ Email: req.body.email}, function(err, response){
-    if (err) next (err)
-    InstructorInstance = response;
-    console.log(response)
-    Classroom.create({ 
-      Name: req.body.name, 
-      Instructor: InstructorInstance.id,
-    }, function(err, classroom_instance){
-        // if (err) return handleError(err);
-        if (err){
-          next(err)
-        }else {
-          Instructor.findByIdAndUpdate(InstructorInstance.id, { $push: {Classes: classroom_instance.id}}, function(err, instructor_instance){
-            if (err) next(err);
-          })
-          res.status(200)
-          res.send({id: classroom_instance.id})
-        }
-    })
   })
 });
 
-router.get('/getinstructor/:id', /*cors(corsOptions),*/ function(req, res){
-  Instructor.findById(req.params.id, 'Classes', function(err, instructor_instance){
-    if (err) return handleError(err);
-    let ClassArray = [];
-    let classPromises = [];
-    for (let classId of instructor_instance.Classes){
-      classPromises.push(new Promise(function(resolve, reject){
-        return Classroom.findById(classId)
-        .then(classroom_instance=>{
-          ClassArray.push({
-            id: classroom_instance.id,
-            name: classroom_instance.Name,
-            students: classroom_instance.Students
-          })
-          //PRINTS AFTER RESPONSE IS SENT
-          resolve("Completed")
-        })
-        .catch(err =>{
-          console.log('There was an error')
-        })
-      }))
-    }
-    Promise.all(classPromises)
-    .then(function(value){
-      res.send({
-        instructor_info: instructor_instance,
-        class_info: ClassArray
-      })
-    })
-    .catch(err =>{
-      console.log('There was an error')
-    })
-  })
-})
-
-router.post('/startattendance', function(req, res) {
-  Classroom.findByIdAndUpdate(req.body.class_id, { ClassCode: req.body.code})
-  res.statusText = "The action was completed";
-  return res.status(200).send('attendance has started')
-})
-
-router.get('/getstudentinfo/:id', /*cors(corsOptions),*/ function(req, res){
+router.get('/getstudentinfo/:id', function(req, res){
   Student.findById(req.params.id, 'Classes', function(err, student_instance){
     if (err) return handleError(err);
     let ClassArray = [];
@@ -170,7 +103,82 @@ router.get('/getstudentinfo/:id', /*cors(corsOptions),*/ function(req, res){
   })
 })
 
-router.get('/getclassinfo/:id', /*cors(corsOptions),*/ function(req, res){
+
+// instructor routes
+router.get('/getinstructor/:id', function(req, res){
+  console.log('gogogoogogo')
+  Instructor.findById(req.params.id, 'Classes', function(err, instructor_instance){
+    if (err) return handleError(err);
+    let ClassArray = [];
+    let classPromises = [];
+    for (let classId of instructor_instance.Classes){
+      classPromises.push(new Promise(function(resolve, reject){
+        return Classroom.findById(classId)
+        .then(classroom_instance=>{
+          if(classroom_instance !== null){
+            ClassArray.push({
+              id: classroom_instance.id,
+              name: classroom_instance.Name,
+              students: classroom_instance.Students
+            })
+            //PRINTS AFTER RESPONSE IS SENT
+            resolve("Completed")
+          }else{
+            Instructor.update( {_id: instructor_instance.id}, { $pull: {Classes: [classId] } } )
+            resolve("not added");
+          }
+        })
+        .catch(err =>{
+          console.log('There was an error')
+        })
+      }))
+    }
+    Promise.all(classPromises)
+    .then(function(value){
+      res.send({
+        instructor_info: instructor_instance,
+        class_info: ClassArray
+      })
+    })
+    .catch(err =>{
+      console.log('There was an error')
+    })
+  })
+})
+
+router.post('/startattendance', function(req, res) {
+  Classroom.findByIdAndUpdate(req.body.class_id, { ClassCode: req.body.code})
+  res.statusText = "The action was completed";
+  return res.status(200).send('attendance has started')
+})
+
+// classroom routes
+router.post('/createclassroom', function(req, res, next) {
+  console.log(req.body)
+  let InstructorInstance;
+  Instructor.findOne({ Email: req.body.email}, function(err, response){
+    if (err) next (err)
+    InstructorInstance = response;
+    console.log(response)
+    Classroom.create({ 
+      Name: req.body.name, 
+      Instructor: InstructorInstance.id,
+    }, function(err, classroom_instance){
+        // if (err) return handleError(err);
+        if (err){
+          next(err)
+        }else {
+          Instructor.findByIdAndUpdate(InstructorInstance.id, { $push: {Classes: classroom_instance.id}}, function(err, instructor_instance){
+            if (err) next(err);
+          })
+          res.status(200)
+          res.send({id: classroom_instance.id})
+        }
+    })
+  })
+});
+
+router.get('/getclassinfo/:id', function(req, res){
   Classroom.findById(req.params.id, "Name Students", function(err, classroom_instance){
     if (err) return handleError(err);
     let StudentArray = [];
@@ -204,9 +212,22 @@ router.get('/getclassinfo/:id', /*cors(corsOptions),*/ function(req, res){
     .catch(err =>{
       console.log(err)
     })
-    
   })
 })
+
+router.delete('/deleteclass/:id', function(req, res){
+  Classroom.findByIdAndRemove(req.params.id, function(err, response){
+    if(err) res.json({message: "Error in deleting record id " + req.params.id});
+    else res.json({message: "Person with id " + req.params.id + " removed."});
+ });
+})
+
+router.post('/updateclassname/:id', function(req, res, next) {
+  Classroom.findByIdAndUpdate(req.params.id, { Name: req.body.name }, function(err, response){
+    if(err) res.json({message: "Error in updating record id " + req.params.id});
+    else res.json({message: "Class with id " + req.params.id + " updated."});
+  })
+});
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

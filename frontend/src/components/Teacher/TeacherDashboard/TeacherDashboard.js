@@ -28,12 +28,40 @@ class ClassDashboard extends React.Component{
         this.resetRows = this.resetRows.bind(this);
         this.changeTime = this.changeTime.bind(this);
         this.createNewClass = this.createNewClass.bind(this);
+        this.deleteClass = this.deleteClass.bind(this);
+        this.updateClassName = this.updateClassName.bind(this);
+    }
+
+    updateClassName = (classNameOriginal, classNameNew) =>{
+        for (let i=0; i<this.state.classRowList.length; i++){
+            if (this.state.classRowList[i].props.data.name === classNameOriginal){
+                let classRowCopy = [...this.state.classRowList]
+                classRowCopy[i].props.data.name = classNameNew;
+                this.setState({
+                    classRowList: classRowCopy,
+                })
+                break;
+            }
+        }
+    }
+
+    deleteClass = className =>{
+        for (let i=0; i<this.state.classRowList.length; i++){
+            if (this.state.classRowList[i].props.data.name === className){
+                let classRowCopy = [...this.state.classRowList]
+                classRowCopy.splice(i, 1)
+                this.setState({
+                    classRowList: classRowCopy,
+                })
+                break;
+            }
+        }
     }
 
     createNewClass = classData =>{
         let currentClassRows = this.state.classRowList
         console.log('wutup')
-        let newRow = <ClassRow key={classData.name} data={classData} startAttendance={this.startAttendance} />
+        let newRow = <ClassRow update={this.updateClassName} delete={this.deleteClass} key={classData.name} data={classData} startAttendance={this.startAttendance} />
         this.setState({
             classRowList: [...currentClassRows, newRow]
         })
@@ -56,7 +84,7 @@ class ClassDashboard extends React.Component{
      */
     generateDefaultClassRows = class_array =>{
         return class_array.map(class_info =>{
-            return <ClassRow key={class_info.name} data={class_info} startAttendance={this.startAttendance} />
+            return <ClassRow key={class_info.name} update={this.updateClassName} data={class_info} delete={this.deleteClass} startAttendance={this.startAttendance} />
         })
     }
 
@@ -90,6 +118,8 @@ class ClassDashboard extends React.Component{
                     data={classArray[i].props.data}
                     code={this.code} 
                     goalTime={this.state.goalTime} 
+                    update={this.updateClassName}
+                    delete={this.deleteClass}
                     startAttendance={this.startAttendance} 
                 />
             }

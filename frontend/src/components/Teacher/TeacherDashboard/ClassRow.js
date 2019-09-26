@@ -21,12 +21,24 @@ class ClassRow extends React.Component{
         this.handleRepeat = this.handleRepeat.bind(this);     
         this.handleStop = this.handleStop.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.update = this.update.bind(this);
+    }
+
+    update = (classNameOriginal, classNameNew) =>{
+        this.handleEdit()
+        this.props.update(classNameOriginal, classNameNew)
     }
 
     handleEdit = () =>{
-        this.setState({
-            editGoingOn: true,
-        })
+        if (this.state.editGoingOn){
+            this.setState({
+                editGoingOn: false,
+            })
+        }else{
+            this.setState({
+                editGoingOn: true,
+            })
+        }
     }
 
     /**
@@ -75,7 +87,7 @@ class ClassRow extends React.Component{
     render(){
         let attendanceTD = null;
         if(this.state.editGoingOn){
-            attendanceTD = <EditBox name={this.props.data.name} /> 
+            attendanceTD = <EditBox update={this.update} delete={this.props.delete} classID={this.props.data.id} handleEditCancel={this.handleEdit} name={this.props.data.name} /> 
         }else if(this.state.attendanceGoingOn){
             attendanceTD = <AttendanceStartTD name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
         }else if(this.props.attendanceEnded){
