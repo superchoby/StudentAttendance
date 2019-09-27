@@ -18,7 +18,7 @@ class ClassDashboard extends React.Component{
         this.state = {
              NeedToShowAttendanceCode: false,
              currentAttendanceCode: '',
-             goalTime: 500,
+             goalTime: 1,
         }
         this.startAttendance = this.startAttendance.bind(this);
         this.stopShowAttendanceCode = this.stopShowAttendanceCode.bind(this);
@@ -110,9 +110,9 @@ class ClassDashboard extends React.Component{
     attendanceTimeUp = name =>{
         let classArray = this.state.classRowList.slice()
         for (let i=0; i<classArray.length; i++){
-            if (classArray[i].props.name === name){
+            if (classArray[i].props.data.name === name){
                 classArray[i] = <ClassRow 
-                    key={classArray[i].props.name} 
+                    key={classArray[i].props.data.name} 
                     attendanceEnded={true} 
                     resetRows={this.resetRows} 
                     data={classArray[i].props.data}
@@ -135,8 +135,12 @@ class ClassDashboard extends React.Component{
     generateAttendanceCode = () =>{
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         this.code = '';
-        for (let i=0; i<4; i++){
-            this.code += characters.charAt(Math.floor(Math.random() * characters.length))
+        const badWords4Letters = ['fuck','shit','nigg','damn','hell','cunt','twat','slut']
+        // badWords3Letters = ['ass','cum']
+        while(!badWords4Letters.includes(this.code)){
+            for (let i=0; i<4; i++){
+                this.code += characters.charAt(Math.floor(Math.random() * characters.length))
+            }
         }
     }
 

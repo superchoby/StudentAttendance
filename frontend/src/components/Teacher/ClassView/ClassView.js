@@ -3,7 +3,7 @@ import Banner from './Banner';
 import axios from 'axios';
 import StudentRow from './StudentRow';
 import './styles/ClassView.css';
-import DateTooltip from './DateTooltip';
+// import DateTooltip from './DateTooltip';
 
 class ClassView extends React.Component{
 

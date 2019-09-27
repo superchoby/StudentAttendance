@@ -4,6 +4,7 @@ import AttendanceStartTD from './AttendanceStartTD';
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import EditBox from './EditBox';
+import AttendanceReport from './AttendanceReport';
 
 /**
  * Represents the information of the classes in
@@ -15,6 +16,7 @@ class ClassRow extends React.Component{
         this.state = {
             attendanceGoingOn: false,
             editGoingOn: false,
+            viewingReport: false,
         }
         this.handleStart = this.handleStart.bind(this);
         this.timesUp = this.timesUp.bind(this);   
@@ -22,6 +24,13 @@ class ClassRow extends React.Component{
         this.handleStop = this.handleStop.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.update = this.update.bind(this);
+        this.viewingReport = this.viewingReport.bind(this);
+    }
+
+    viewingReport = () =>{
+        this.setState({
+            viewingReport: true,
+        })
     }
 
     update = (classNameOriginal, classNameNew) =>{
@@ -86,14 +95,16 @@ class ClassRow extends React.Component{
 
     render(){
         let attendanceTD = null;
-        if(this.state.editGoingOn){
+        if (this.state.viewingReport){
+            attendanceTD = <AttendanceReport classID={this.props.data.id} name={this.props.data.name} /> 
+        }else if(this.state.editGoingOn){
             attendanceTD = <EditBox update={this.update} delete={this.props.delete} classID={this.props.data.id} handleEditCancel={this.handleEdit} name={this.props.data.name} /> 
         }else if(this.state.attendanceGoingOn){
             attendanceTD = <AttendanceStartTD name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
         }else if(this.props.attendanceEnded){
             attendanceTD = 
             <React.Fragment>
-                <td></td>
+                <td className='continue-end-attendence-td' onClick={this.viewingReport}>Report</td>
                 <td className='continue-end-attendence-td' onClick={this.handleRepeat}>Repeat</td>
                 <td className='continue-end-attendence-td' onClick={this.handleStop}>Stop</td>
             </React.Fragment>
