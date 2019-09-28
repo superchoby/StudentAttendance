@@ -137,9 +137,16 @@ class ClassDashboard extends React.Component{
         this.code = '';
         const badWords4Letters = ['fuck','shit','nigg','damn','hell','cunt','twat','slut']
         // badWords3Letters = ['ass','cum']
-        while(!badWords4Letters.includes(this.code)){
+        while(true){
             for (let i=0; i<4; i++){
                 this.code += characters.charAt(Math.floor(Math.random() * characters.length))
+            }
+            if(badWords4Letters.includes(this.code)){
+                this.code = ''
+            }else if(this.code.includes('ass') || this.code.includes('cum')){
+                this.code = ''
+            }else{
+                break
             }
         }
     }

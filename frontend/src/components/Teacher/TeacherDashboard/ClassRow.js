@@ -24,13 +24,19 @@ class ClassRow extends React.Component{
         this.handleStop = this.handleStop.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.update = this.update.bind(this);
-        this.viewingReport = this.viewingReport.bind(this);
+        this.handleReport = this.handleReport.bind(this);
     }
 
-    viewingReport = () =>{
-        this.setState({
-            viewingReport: true,
-        })
+    handleReport = () =>{
+        if (this.state.viewingReport){
+            this.setState({
+                viewingReport: false,
+            })
+        }else{
+            this.setState({
+                viewingReport: true,
+            })
+        }
     }
 
     update = (classNameOriginal, classNameNew) =>{
@@ -96,7 +102,7 @@ class ClassRow extends React.Component{
     render(){
         let attendanceTD = null;
         if (this.state.viewingReport){
-            attendanceTD = <AttendanceReport classID={this.props.data.id} name={this.props.data.name} /> 
+            attendanceTD = <AttendanceReport close={this.handleReport} classID={this.props.data.id} name={this.props.data.name} />
         }else if(this.state.editGoingOn){
             attendanceTD = <EditBox update={this.update} delete={this.props.delete} classID={this.props.data.id} handleEditCancel={this.handleEdit} name={this.props.data.name} /> 
         }else if(this.state.attendanceGoingOn){
@@ -104,7 +110,7 @@ class ClassRow extends React.Component{
         }else if(this.props.attendanceEnded){
             attendanceTD = 
             <React.Fragment>
-                <td className='continue-end-attendence-td' onClick={this.viewingReport}>Report</td>
+                <td className='continue-end-attendence-td' onClick={this.handleReport}>Report</td>
                 <td className='continue-end-attendence-td' onClick={this.handleRepeat}>Repeat</td>
                 <td className='continue-end-attendence-td' onClick={this.handleStop}>Stop</td>
             </React.Fragment>
