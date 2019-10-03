@@ -13,7 +13,7 @@ class StudentRow extends React.Component{
         return dateList.map(date =>{
             let dateObj = new Date(date)
             let day = dateObj.getDate().length === 2 ? dateObj.getDate() : '0' + dateObj.getDate()
-            return dateObj.getMonth() + '/' + dateObj.getDate() + '/' + dateObj.getFullYear()
+            return dateObj.getMonth() + '/' + day + '/' + dateObj.getFullYear()
         })
     }
 

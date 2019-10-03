@@ -23,7 +23,7 @@ export default class EditBox extends Component {
     updateClassName = e =>{
         e.preventDefault();
         this.props.update(this.props.name, this.state.classNameText);
-        let url = 'http://127.0.0.1:8080/users/updateclassname/' + this.props.classID;
+        let url = 'http://127.0.0.1:8080/users/v1/updateclassname/' + this.props.classID;
         axios.post(url, {name: this.state.classNameText})
         .then(res =>{
             console.log(res)
@@ -35,7 +35,7 @@ export default class EditBox extends Component {
 
     handleDelete = e =>{
         e.preventDefault();
-        let url = 'http://127.0.0.1:8080/users/deleteclass/' + this.props.classID;
+        let url = 'http://127.0.0.1:8080/users/v1/deleteclass/' + this.props.classID;
         this.props.delete(this.props.name)
         axios.delete(url)
         .then(res =>{

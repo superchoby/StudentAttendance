@@ -1,0 +1,9 @@
+.student-report-name{
+    display: inline-block;
+    width: 33%; 
+}
+
+.student-report-name:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}

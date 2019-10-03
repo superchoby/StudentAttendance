@@ -7,14 +7,13 @@ import DefaultTime from './DefaultTime';
  * lets the teacher know they are in the dashboard 
  * section
  */
-class Banner extends React.Component{
+class Banner extends React.Component{    
 
     render(){
         return(
             <div id='banner-div'>
                 <div className='dashboard-header'>Classes</div>
-                <DefaultTime changeTime={this.props.changeTime}  goalTime={this.props.goalTime}/>
-                {/* <AddClass /> */}
+                <DefaultTime />
             </div>
         )
     }

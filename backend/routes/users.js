@@ -2,54 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const db = require('../db');
-const Schema = db.Schema;
-// const cors = require('cors');
-
-// const corsOptions = {
-//   origin: 'http://localhost:3000'
-// }
-
-const ClassroomSchema = new Schema({
-  Name: String,
-  Students: [String],
-  Instructor: { type: String, required: true },
-  ClassCode: String,
-})
-
-const InstructorSchema = new Schema({
-  Classes: [String],
-  Email: String,
-  Password: String,
-  Prefix: String,
-  Token: String,
-})
-
-const StudentSchema = new Schema({
-  StudentId: Number,
-  FullName: String,
-  DaysPresent: [{type: Date}],
-  DaysLate: [{type: Date}],
-  DaysUnexcusedAbsences: [{type: Date}],
-  DaysExcusedAbsences: [{type: Date}],
-  Classes: [String],
-  AttendanceCode: String,
-  ClassCurrentlyHoldingAttendance: String,
-  Email: String,
-  Password: String,
-  Token: String,
-})
-
-const Classroom = mongoose.model('Classroom', ClassroomSchema);
-const Instructor = mongoose.model('Instructor', InstructorSchema);
-const Student = mongoose.model('Student', StudentSchema); 
-
-router.post('/createinstructor', function(req, res, next) {
-  Instructor.create({ Email: req.body.email, Password: req.body.password }, function(err, instructor_instance){
-    if (err) return handleError(err);
-    return instructor_instance
-  })
-  res.send('respond with a resource');
-});
+// const Schema = db.Schema;
+ 
+const Classroom = db.Classroom;
+const Instructor = db.Instructor;
+const Student = db.Student;
 
 // student routes
 router.post('/createstudent', function(req, res, next) {
@@ -103,12 +60,18 @@ router.get('/getstudentinfo/:id', function(req, res){
   })
 })
 
-
 // instructor routes
-router.get('/getinstructor/:id', function(req, res){
-  console.log('gogogoogogo')
-  Instructor.findById(req.params.id, 'Classes', function(err, instructor_instance){
+
+router.post('/createinstructor', function(req, res, next) {
+  Instructor.create({ Email: req.body.email, Password: req.body.password }, function(err, instructor_instance){
     if (err) return handleError(err);
+    res.send(instructor_instance);
+  })
+});
+
+router.post('/getinstructor', function(req, res){
+  Instructor.findOne({Email: req.body.email}, 'Classes AttendanceTime', function(err, instructor_instance){
+    if (err) res.status(500).send('Something broke!');
     let ClassArray = [];
     let classPromises = [];
     for (let classId of instructor_instance.Classes){
@@ -146,6 +109,15 @@ router.get('/getinstructor/:id', function(req, res){
   })
 })
 
+router.put('/updateinstructortime/:id', function(req, res){
+  Instructor.findByIdAndUpdate(req.params.id, { AttendanceTime: req.body.time }, function(err, instructor_instance){
+    if (err) res.status(500).send('Something broke!');
+    else return res.status(200).send('time updated successfully')
+  })
+})
+
+
+
 router.post('/startattendance', function(req, res) {
   Classroom.findByIdAndUpdate(req.body.class_id, { ClassCode: req.body.code})
   res.statusText = "The action was completed";
@@ -180,7 +152,7 @@ router.post('/createclassroom', function(req, res, next) {
 
 router.get('/getclassinfo/:id', function(req, res){
   Classroom.findById(req.params.id, "Name Students", function(err, classroom_instance){
-    if (err) return handleError(err);
+    if (err) res.status(500).send('Something broke!');
     let StudentArray = [];
     let studentPromises = [];
     for (let studentId of classroom_instance.Students){
@@ -237,7 +209,7 @@ router.get('/', function(req, res, next) {
   Classroom.find(function(err, response){
     console.log(response)
   })
-  Instructor.findOne(function(err, response){
+  Instructor.find({Email: 'teacher@teacher.com'}, function(err, response){
     console.log(response)
   })
 

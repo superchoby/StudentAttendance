@@ -1,10 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => {
+    return { 
+        time: state.time,
+    };
+}
 
 /**
  * Counts down the time that the attendance has left to go
  */
-class Timer extends React.Component{
+class TimerComponent extends React.Component{
     constructor(props) {
         super(props)
     
@@ -32,10 +39,11 @@ class Timer extends React.Component{
             secondsSTR: ('0' + currentSeconds.toString()).slice(-2),
             seconds: currentSeconds,
         })
-        if(this.state.minutes*60 + this.state.seconds === this.props.goalTime){
+        if(this.state.minutes*60 + this.state.seconds === this.props.time){
             clearInterval(this.timerInterval);
             this.props.timesUp(this.props.name);
         }
+        this.props.storeTime();
     }
 
     /**
@@ -43,9 +51,28 @@ class Timer extends React.Component{
      * occur every second
      */
     componentDidMount(){
-        this.timerInterval = setInterval(() => {
-            this.countTime();
-        }, 1000);
+        if(this.props.currentTime > this.props.time){
+            this.props.timesUp(this.props.name);
+        }else if(this.props.currentTime != null){
+            let minutesPassed = Math.floor(this.props.currentTime/60)
+            let secondsPassed = this.props.currentTime % 60
+            this.setState({
+                minutes: minutesPassed,
+                seconds: secondsPassed,
+            }, function(){
+                this.timerInterval = setInterval(() => {
+                    this.countTime();
+                }, 1000);
+            })
+        }else{
+            this.timerInterval = setInterval(() => {
+                this.countTime();
+            }, 1000);
+        }
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.timerInterval)
     }
 
     render(){
@@ -57,7 +84,7 @@ class Timer extends React.Component{
     }
 }
 
-Timer.propTypes = {
+TimerComponent.propTypes = {
     /**The time length of the attendance section */
     goalTime: PropTypes.number.isRequired,
     /** Deals with when the attendance time is up */
@@ -65,5 +92,7 @@ Timer.propTypes = {
     /** the name of the classroom */
     name: PropTypes.string.isRequired,
 }
+
+const Timer = connect(mapStateToProps)(TimerComponent)
 
 export default Timer;

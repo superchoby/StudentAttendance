@@ -1,4 +1,4 @@
-.Login {
+/* .Login {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -136,7 +136,7 @@ li {
 
 }
 
-/* Change the link color to #111 (black) on hover */
+Change the link color to #111 (black) on hover
 #Students a:hover, #Teachers a:hover {
   background-color: #111;
-}
+} */
