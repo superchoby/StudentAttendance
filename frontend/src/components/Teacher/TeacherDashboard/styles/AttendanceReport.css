@@ -31,16 +31,6 @@
     background-color: black;
 }
 
-#present-div{
-    color: #17C61A;
-    /* background-color: #17C61A; */
-}
-
-#absent-div{
-    color: #FF0000;
-    /* background-color: #17C61A; */
-}
-
 .present-absent-div{
     /* position: absolute; */
     width: 100%;

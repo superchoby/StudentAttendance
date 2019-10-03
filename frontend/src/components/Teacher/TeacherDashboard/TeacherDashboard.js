@@ -4,21 +4,29 @@ import ClassRow from './ClassRow';
 import './styles/ClassDashboard.css';
 import AttendanceCode from './AttendanceCode';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import './styles/TeacherDashboard.css';
 import AddClass from './AddClass';
+import { storeStudents, storeDefaultTime, storeInstructorId } from '../../../actions/index';
+
+function mapDispatchToProps(dispatch) {
+    return {
+        storeStudents: students => dispatch(storeStudents(students)),
+        changeTime: time => dispatch(storeDefaultTime(time)),
+        storeInstructorId: id => dispatch(storeInstructorId(id)),
+    }
+}
 
 /**
- * The parent component that contains the entire page
+ * The parent component that contaiandns the entire page
  * for the teacher's dashboard
  */
-class ClassDashboard extends React.Component{
+class ClassDashboardComponent extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
              NeedToShowAttendanceCode: false,
              currentAttendanceCode: '',
-             goalTime: 1,
         }
         this.startAttendance = this.startAttendance.bind(this);
         this.stopShowAttendanceCode = this.stopShowAttendanceCode.bind(this);
@@ -26,7 +34,6 @@ class ClassDashboard extends React.Component{
         this.attendanceTimeUp = this.attendanceTimeUp.bind(this);
         this.generateDefaultClassRows = this.generateDefaultClassRows.bind(this);
         this.resetRows = this.resetRows.bind(this);
-        this.changeTime = this.changeTime.bind(this);
         this.createNewClass = this.createNewClass.bind(this);
         this.deleteClass = this.deleteClass.bind(this);
         this.updateClassName = this.updateClassName.bind(this);
@@ -67,11 +74,7 @@ class ClassDashboard extends React.Component{
         })
     }
 
-    changeTime = newTime =>{
-        this.setState({
-            goalTime: newTime
-        })
-    }
+    
 
     /**
      * creates an array of ClassRow components containing the data in the
@@ -112,6 +115,7 @@ class ClassDashboard extends React.Component{
         for (let i=0; i<classArray.length; i++){
             if (classArray[i].props.data.name === name){
                 classArray[i] = <ClassRow 
+                    cancelAttendance={this.resetRows}
                     key={classArray[i].props.data.name} 
                     attendanceEnded={true} 
                     resetRows={this.resetRows} 
@@ -141,7 +145,7 @@ class ClassDashboard extends React.Component{
             for (let i=0; i<4; i++){
                 this.code += characters.charAt(Math.floor(Math.random() * characters.length))
             }
-            if(badWords4Letters.includes(this.code)){
+            if(badWords4Letters.includes(this.code.toUpperCase())){
                 this.code = ''
             }else if(this.code.includes('ass') || this.code.includes('cum')){
                 this.code = ''
@@ -167,7 +171,7 @@ class ClassDashboard extends React.Component{
         let classArray = this.state.classRowList.slice()
         for (let i=0; i<classArray.length; i++){
             if (classArray[i].props.data.name === name){
-                classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
+                classArray[i] = <ClassRow key={classArray[i].props.data.name} cancelAttendance={this.resetRows} data={classArray[i].props.data} timesUp={this.attendanceTimeUp} code={this.code} goalTime={this.state.goalTime} startAttendance={this.startAttendance} />
             }else{
                 classArray[i] = <ClassRow key={classArray[i].props.data.name} data={classArray[i].props.data} otherRowStartAttendance={true} />
             }
@@ -194,13 +198,31 @@ class ClassDashboard extends React.Component{
      * as the information of it's classes
      */
     componentDidMount(){
-        axios.get('http://127.0.0.1:8080/users/getinstructor/5d79d7b12c301d1816288737')
+        axios.post('http://127.0.0.1:8080/users/v1/getinstructor', {email: 'teacher@teacher.com'})
         .then(res =>{
             let classRowList = this.generateDefaultClassRows(res.data.class_info)
+            this.props.changeTime(res.data.instructor_info.AttendanceTime)
             this.setState({
                 classInfo: res.data.class_info,
                 classRowList: classRowList,
                 instructorInfo: res.data.instructor_info,
+            })
+            this.props.storeInstructorId(res.data.instructor_info._id)
+            let classesAndStudents = {}
+            let axiosRequests = []
+            for (let clss of res.data.class_info){
+                let url = 'http://127.0.0.1:8080/users/v1/getclassinfo/' + clss.id;
+                axiosRequests.push(axios.get(url))
+            }
+            axios.all(axiosRequests)
+            .then(res =>{
+                for(let i=0; i<res.length; i++){
+                    classesAndStudents[res[i].data.class_info._id] = {
+                        ClassName: res[i].data.class_info.Name,
+                        studentInfo: res[i].data.student_info,
+                    }
+                }
+                this.props.storeStudents(classesAndStudents)
             })
         })
         .catch(err =>{
@@ -213,7 +235,7 @@ class ClassDashboard extends React.Component{
         return(
             <React.Fragment>
                 <div>
-                    <Banner changeTime={this.changeTime} goalTime={this.state.goalTime} /> 
+                    <Banner goalTime={this.state.goalTime} /> 
                     <table>
                         <tbody>
                             {this.state.classRowList}
@@ -226,5 +248,7 @@ class ClassDashboard extends React.Component{
         )
     }
 }
+
+const ClassDashboard = connect(null, mapDispatchToProps)(ClassDashboardComponent)
 
 export default ClassDashboard;

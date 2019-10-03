@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import EditBox from './EditBox';
 import AttendanceReport from './AttendanceReport';
+import ConfirmCancel from './ConfirmCancel';
 
 /**
  * Represents the information of the classes in
@@ -17,14 +18,61 @@ class ClassRow extends React.Component{
             attendanceGoingOn: false,
             editGoingOn: false,
             viewingReport: false,
+            confirmCancel: false,
+            absentList: [],
+            presentList: [],
         }
         this.handleStart = this.handleStart.bind(this);
         this.timesUp = this.timesUp.bind(this);   
         this.handleRepeat = this.handleRepeat.bind(this);     
-        this.handleStop = this.handleStop.bind(this);
+        this.handleFinish = this.handleFinish.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.update = this.update.bind(this);
         this.handleReport = this.handleReport.bind(this);
+        this.saveAttendanceLists = this.saveAttendanceLists.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
+        this.cancelAttendance = this.cancelAttendance.bind(this);
+    }
+
+    cancelAttendance = () =>{
+        this.props.cancelAttendance();
+        this.setState({
+            attendanceGoingOn: false,
+            confirmCancel: false,
+        })
+        //backend request to cancel attendance code
+    }
+
+    handleCancel = () =>{
+        if (this.state.confirmCancel){
+            this.setState({
+                confirmCancel: false,
+            })
+        }else{
+            this.setState({
+                confirmCancel: true,
+            })
+            setTimeout(function(){
+                for (let element of document.getElementsByClassName('visibility')){
+                    element.style.visibility = 'visible';
+                }
+            }, 900)
+        }
+    }
+
+    saveAttendanceLists = (presentList, absentList) =>{
+        const presentListNames = presentList.map(student =>{
+            return student.props.name
+        })
+        presentListNames.sort()
+        const absentListNames = absentList.map(student =>{
+            return student.props.name
+        })
+        absentListNames.sort()
+        this.setState({
+            presentList: presentListNames,
+            absentList: absentListNames
+        })
     }
 
     handleReport = () =>{
@@ -33,9 +81,22 @@ class ClassRow extends React.Component{
                 viewingReport: false,
             })
         }else{
-            this.setState({
-                viewingReport: true,
-            })
+            //if this is the first time the user is viewing the attendance report
+            if (this.state.presentList.length === 0 && this.state.absentList.length === 0){
+                let testList = ['tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya'].sort();
+                let otherList = ['yu ishigami','miko iino','moeha fujiwara']
+                
+                this.setState({
+                    presentList: testList,
+                    absentList: otherList,
+                    viewingReport: true,
+                })
+            }else{ // if they have already viewed the attendance report
+                this.setState({
+                    viewingReport: true,
+                })
+            }
+            
         }
     }
 
@@ -60,11 +121,12 @@ class ClassRow extends React.Component{
      * Activates when the user wants to stop the attendance
      * after time is up
      */
-    handleStop = () =>{
+    handleFinish = () =>{
         this.props.resetRows();
         this.setState({
             attendanceGoingOn: false,
         })
+        //need to do part where data is sent to backend
     }
 
     /**
@@ -101,21 +163,32 @@ class ClassRow extends React.Component{
 
     render(){
         let attendanceTD = null;
-        if (this.state.viewingReport){
-            attendanceTD = <AttendanceReport close={this.handleReport} classID={this.props.data.id} name={this.props.data.name} />
+        if (this.state.confirmCancel){
+            attendanceTD = <ConfirmCancel cancelAttendance={this.cancelAttendance} closeCancelBox={this.handleCancel} />
+        }else if (this.state.viewingReport){
+            attendanceTD = 
+                <AttendanceReport 
+                    save={this.saveAttendanceLists} 
+                    absentList={this.state.absentList} 
+                    presentList={this.state.presentList} 
+                    close={this.handleReport} 
+                    classID={this.props.data.id} 
+                    name={this.props.data.name} 
+                />
         }else if(this.state.editGoingOn){
             attendanceTD = <EditBox update={this.update} delete={this.props.delete} classID={this.props.data.id} handleEditCancel={this.handleEdit} name={this.props.data.name} /> 
         }else if(this.state.attendanceGoingOn){
-            attendanceTD = <AttendanceStartTD name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
+            attendanceTD = <AttendanceStartTD cancelAttendance={this.cancelAttendance} name={this.props.data.name} code={this.props.code} timesUp={this.timesUp} goalTime={this.props.goalTime} /> 
         }else if(this.props.attendanceEnded){
             attendanceTD = 
             <React.Fragment>
                 <td className='continue-end-attendence-td' onClick={this.handleReport}>Report</td>
                 <td className='continue-end-attendence-td' onClick={this.handleRepeat}>Repeat</td>
-                <td className='continue-end-attendence-td' onClick={this.handleStop}>Stop</td>
+                <td className='continue-end-attendence-td' onClick={this.handleFinish}>Finish</td>
+                <td className='continue-end-attendence-td' onClick={this.handleCancel}>Cancel</td>
             </React.Fragment>
         }else if(this.props.otherRowStartAttendance){
-            attendanceTD = <React.Fragment><td></td><td></td><td></td></React.Fragment>
+            attendanceTD = <React.Fragment><td></td><td></td><td></td><td></td></React.Fragment>
         }else{
             let url = '/viewclassinfo/' + this.props.data.id
             attendanceTD = 

@@ -26,7 +26,7 @@ class AddClass extends React.Component{
     handleSubmit = e =>{
         let global = this
         e.preventDefault()
-        axios.post('http://127.0.0.1:8080/users/createclassroom', {
+        axios.post('http://127.0.0.1:8080/users/v1/createclassroom', {
             "name": this.state.className,
             "email": "teacher@teacher.com"
         })

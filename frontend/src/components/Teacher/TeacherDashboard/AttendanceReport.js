@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import './styles/AttendanceReport.css';
-import './ReportStudentName';
 import ReportStudentName from './ReportStudentName';
 
 export default class AttendanceReport extends Component {
@@ -9,26 +8,63 @@ export default class AttendanceReport extends Component {
         super(props)
     
         this.state = {
-             absentList: [],
-             presentList: [],
+             absentList: this.props.absentList,
+             presentList: this.props.presentList,
         }
         this.handleClose = this.handleClose.bind(this);
         this.handleTransfer = this.handleTransfer.bind(this);
     }
 
-    handleTransfer = 
+    handleTransfer = (nameToTransfer, toPresent) =>{
+        if (toPresent){
+            let copyAbsentList = [...this.state.absentList]
+            for (let i=0; i<this.state.absentList.length; i++){
+                if (this.state.absentList[i].props.name === nameToTransfer){
+                    // let removedStudent = copyAbsentList.splice(i, 1)
+                    let removedStudentProps = copyAbsentList.splice(i, 1)[0].props
+                    let tempStudent = <ReportStudentName key={removedStudentProps.name} isPresent={true} shouldBeGreen={removedStudentProps.shouldBeGreen} transfer={this.handleTransfer} name={removedStudentProps.name} />
+                    let copyPresentList = [...this.state.presentList]
+                    copyPresentList.push(tempStudent)
+                    this.setState({
+                        presentList: copyPresentList,
+                        absentList: copyAbsentList,
+                    })
+                    break
+                }
+            }
+        }else{
+            let copyPresentList = [...this.state.presentList]
+            for (let i=0; i<this.state.presentList.length; i++){
+                if (this.state.presentList[i].props.name === nameToTransfer){
+                    let removedStudentProps = copyPresentList.splice(i, 1)[0].props
+                    let tempStudent = <ReportStudentName key={removedStudentProps.name} isPresent={false} shouldBeGreen={removedStudentProps.shouldBeGreen} transfer={this.handleTransfer} name={removedStudentProps.name} />
+                    let copyAbsentList = [...this.state.absentList]
+                    copyAbsentList.push(tempStudent)
+                    this.setState({
+                        presentList: copyPresentList,
+                        absentList: copyAbsentList,
+                    })
+                    break
+                }
+            }
+        }
+    }
 
     handleClose = e =>{
+        this.props.save(this.state.presentList, this.state.absentList);
         this.props.close();
     }
 
     componentDidMount(){
-        const testList = ['Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya','Tommy Trinh', 'miyuki shirogane','chika fujiwara', 'kaguya shinomiya']
-        let copyList = testList.map(studentName =>{
-            return <ReportStudentName key={studentName} transfer={this.handleTransfer} name={studentName} />
+        let copyList = this.props.presentList.map(studentName =>{
+            return <ReportStudentName key={studentName} isPresent={true} shouldBeGreen={true} transfer={this.handleTransfer} name={studentName} />
+        })
+        let copyOtherList = this.props.absentList.map(studentName =>{
+            return <ReportStudentName key={studentName} isPresent={false} shouldBeGreen={false} transfer={this.handleTransfer} name={studentName} />
         })
         this.setState({
-            absentList: copyList,
+            presentList: copyList,
+            absentList: copyOtherList,
         })
     }
     
@@ -42,14 +78,14 @@ export default class AttendanceReport extends Component {
                     <h2>&nbsp;&nbsp;Present</h2>
                     <div className='present-absent-div' id='present-div'>
                         <div className='attendance-name-status'>
-                            {this.state.absentList}
+                            {this.state.presentList}
                         </div>
                     </div>
                     <span id='report-divider-line'></span>
                     <h2>Absent</h2>
                     <div className='present-absent-div' id='absent-div'>
                         <div className='attendance-name-status'>
-
+                            {this.state.absentList}
                         </div>
                     </div>
                 </div>

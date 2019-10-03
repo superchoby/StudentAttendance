@@ -1,11 +1,16 @@
 import React from 'react';
 import Banner from './Banner';
-import axios from 'axios';
 import StudentRow from './StudentRow';
 import './styles/ClassView.css';
-// import DateTooltip from './DateTooltip';
+import { connect } from 'react-redux';
 
-class ClassView extends React.Component{
+const mapStateToProps = state => {
+    return { 
+        students: state.students,
+    };
+}
+
+class ClassViewComponent extends React.Component{
 
     constructor(props) {
         super(props)
@@ -24,18 +29,13 @@ class ClassView extends React.Component{
     }
 
     componentDidMount(){
-        let url = 'http://127.0.0.1:8080/users/getclassinfo/' + this.props.match.params.class_id;
-        axios.get(url)
-        .then(res =>{
-            let studentRows = this.generateStudentRows(res.data.student_info)
-            this.setState({
-                studentRowsList: studentRows,
-                Name: res.data.class_info.Name,
-            })
+        let student = this.props.students[this.props.match.params.class_id]
+        let studentRows = this.generateStudentRows(student.studentInfo)
+        this.setState({
+            studentRowsList: studentRows,
+            Name: student.ClassName,
         })
-        .catch(err =>{
-            console.log(err)
-        })
+        
     }
 
     render(){
@@ -62,5 +62,7 @@ class ClassView extends React.Component{
         )
     }
 }
+
+const ClassView = connect(mapStateToProps)(ClassViewComponent)
 
 export default ClassView;

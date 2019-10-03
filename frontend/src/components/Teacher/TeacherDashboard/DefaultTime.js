@@ -1,24 +1,39 @@
 import React from 'react';
 import './styles/DefaultTime.css';
+import { storeDefaultTime } from '../../../actions/index';
+import { connect } from 'react-redux';
+import axios from 'axios';
+
+function mapDispatchToProps(dispatch) {
+    return {
+        changeTime: time => dispatch(storeDefaultTime(time)),
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        goalTime: state.time,
+        instructorId: state.id,
+    }
+}
 
 /**
  * Shows the attendance time set by the teacher
  */
-class DefaultTime extends React.Component{
+class DefaultTimeComponent extends React.Component{
 
     constructor(props) {
         super(props)
     
         this.state = {
-             defaultTime: this.props.goalTime,
              wantToChangeTime: false,
-             goalTime: this.props.goalTime,
+             goalTime: 0,
         }
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.test = this.test.bind(this);
+        this.changeTime = this.changeTime.bind(this);
     }
 
-    test = e =>{
+    changeTime = e =>{
         e.preventDefault()
         let timeValues = document.getElementsByClassName('time-change-inputs')
         let minutes = parseInt(timeValues[0].value !== '' ? timeValues[0].value : '0')
@@ -27,8 +42,11 @@ class DefaultTime extends React.Component{
         this.setState({
             goalTime: timeConverted,
             wantToChangeTime: false,
+        }, function(){
+            let url = 'http://127.0.0.1:8080/users/v1/updateinstructortime/' + this.props.instructorId;
+            axios.put(url, { time: this.state.goalTime})
         })
-        this.props.changeTime(timeConverted)
+        this.props.changeTime(timeConverted);
     }
 
     handleTimeChange = e =>{
@@ -36,14 +54,21 @@ class DefaultTime extends React.Component{
             wantToChangeTime: true,
         })
     }
-    
+
+    componentDidUpdate(){
+        if (this.props.goalTime != this.state.goalTime){
+            this.setState({
+                goalTime: this.props.goalTime,
+            })
+        }
+    }  
     
     render(){
         let minutes = (Math.floor(this.state.goalTime/60)).toString()
         let seconds = (this.state.goalTime % 60).toString()
         let secondsAdjusted = seconds.length === 2 ? seconds : '0' + seconds;
         let timeDisplay = this.state.wantToChangeTime ? 
-        <form onSubmit={this.test}>
+        <form onSubmit={this.changeTime}>
             <input defaultValue={minutes} className='time-change-inputs' />
                 <p className='time-change-inputs' style={{'textDecoration':'none'}}>{':'}</p>
             <input defaultValue={secondsAdjusted} className='time-change-inputs' />
@@ -61,5 +86,7 @@ class DefaultTime extends React.Component{
         )
     }
 }
+
+const DefaultTime = connect(mapStateToProps, mapDispatchToProps)(DefaultTimeComponent)
 
 export default DefaultTime;
