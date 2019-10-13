@@ -1,4 +1,4 @@
-/* .SignUp {
+.SignUp {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -38,12 +38,14 @@ input {
 }
 .accHeader {
   position:relative;
-  bottom: 50px;
+  bottom: 20px;
 }
 .passwordConfirmTitle {
   position: relative;
   margin-bottom: 5px;
 }
+
+
 
 button[type = "createAccount"] {
   position: relative;
@@ -57,4 +59,4 @@ button[type = "createAccount"] {
   border: none;
   cursor: pointer;
 
-} */
+}

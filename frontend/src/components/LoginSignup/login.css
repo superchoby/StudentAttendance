@@ -1,4 +1,4 @@
-/* .Login {
+.Login {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -8,7 +8,7 @@
 
 
 }
-h1, h2, h3, h4, h5, h6 {
+.needAccount, .emailTitle {
     font-family: 'Corben', Georgia, Times, serif;
 }
 
@@ -24,13 +24,17 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
+.header {}
+
 input:focus::placeholder{
        color:transparent;
   }
 
-  input[type=submit] {
-    width: 100%;
-    background-color: #4CAF50;
+button[type= "submitLogin"] {
+    position: relative;
+    width: 50%;
+    top: -18px;
+    background-color: #8226d0;
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -81,7 +85,7 @@ button[type = "submit"] {
 }
 
 
-#header{
+#loginHeader{
   list-style-type: none;
   padding: 0;
 position:relative;
@@ -104,7 +108,6 @@ li {
   border-right: 1px solid black;
 
 }
-
 
 
 #Students a, #Teachers a{
@@ -136,7 +139,7 @@ li {
 
 }
 
-Change the link color to #111 (black) on hover
+/* Change the link color to #111 (black) on hover */
 #Students a:hover, #Teachers a:hover {
   background-color: #111;
-} */
+}
