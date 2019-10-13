@@ -1,8 +1,10 @@
 import React from 'react';
 import './login.css'
+import axios from 'axios'
 import ForgotPassPopUp from './ForgotPassPopUp.js'
 import { NavLink } from 'react-router-dom';
-
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 class Login extends React.Component {
   constructor(props) {
    super(props);
@@ -48,23 +50,51 @@ console.log(this.state.active)
 }
  handleSubmit(e) {
    e.preventDefault();
-
-   console.log(this.state.email + " " + this.state.password)
-
- }
+   if(this.state.isStudent) {
+     axios.post('http://127.0.0.1:8080/users/getStudent', {
+      email: this.state.email,
+      password: this.state.password
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+    else  {
+      axios.post('http://127.0.0.1:8080/users/getTeacher', {
+       email: this.state.email,
+       password: this.state.password
+     })
+     .then(function (response) {
+       console.log(response);
+     })
+     .catch(function (error) {
+       console.log(error);
+     });
+    }
+}
 
 render() {
-
+  const styles = {
+  root: {
+    '&$disabled': {
+      color: 'white',
+    },
+  },
+  disabled: {},
+};
   return (
 
   <div className="Login">
   <form className = "loginForm" onSubmit={this.handleSubmit} >
-
-      <ul id = "header">
-
-      <li id = "Students"  onClick = {this.handleMenuChange} ><NavLink> Students</NavLink></li>
-      <li id = "Teachers" onClick = {this.handleMenuChange}><NavLink >Teachers </NavLink></li>
-      </ul>
+    <div className = "loginHeader" >
+    <ToggleButtonGroup onChange = {this.handleMenuChange}  exclusive = {true}>
+    <ToggleButton selected = {this.state.isStudent}> Student</ToggleButton>
+    <ToggleButton selected = {this.state.isTeacher}> Teacher</ToggleButton>
+    </ToggleButtonGroup >
+    </div>
     <div className = "loginBoxes">
       <h4 className = "emailTitle"> Email </h4>
       <input type ="logemail" value={this.state.email}
@@ -75,9 +105,9 @@ render() {
            placeholder = "Enter password" onChange = {this.handlePasswordChange}>
       </input>
     </div>
-    <a className = "forgotPass"> Forgot Password? </a> 
+    <a className = "forgotPass"> Forgot Password? </a>
     <h5 className = "needAccount"> Don't have an account? <a><NavLink to = "/SignUp"> Create account</NavLink> </a> </h5>
-    <button type = "submit" > Submit </button>
+    <button type = "submitLogin" > Submit </button>
   </form>
 </div>
 );
